@@ -1,6 +1,7 @@
 ## SQL Training 
 
 ### Data Lemur
+PostgreSQL 14
 
 [Histogram of Tweets](https://datalemur.com/questions/sql-histogram-tweets)
 
@@ -48,4 +49,32 @@ SELECT
 FROM
   viewership
   
+```
+
+[App Click-through Rate (CTR)](https://datalemur.com/questions/click-through-rate)
+
+```SQL
+
+SELECT
+  app_id,
+  ROUND(100.0 * SUM(
+      CASE
+        WHEN event_type = 'click' THEN 1
+      ELSE
+      0
+    END
+      )/ SUM(
+      CASE
+        WHEN event_type = 'impression' THEN 1
+      ELSE
+      0
+    END
+      ),2) AS ctr
+FROM
+  events
+WHERE
+  timestamp BETWEEN '2022-01-01'
+  AND '2022-12-31'
+GROUP BY 1
+
 ```
