@@ -3,6 +3,28 @@
 ### Data Lemur
 PostgreSQL 14
 
+[User's Third Transaction](https://datalemur.com/questions/sql-third-transaction)
+
+```SQL
+
+WITH
+  transactions_ranked AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY transaction_date) AS rnk
+  FROM
+    transactions )
+SELECT
+  user_id,
+  spend,
+  transaction_date
+FROM
+  transactions_ranked
+WHERE
+  rnk = 3
+
+```
+
 [Histogram of Tweets](https://datalemur.com/questions/sql-histogram-tweets)
 
 ```SQL
