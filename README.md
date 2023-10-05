@@ -3,7 +3,64 @@
 ### Data Lemur
 PostgreSQL 14
 
+[Tweets' Rolling Averages](https://datalemur.com/questions/rolling-average-tweets)
+
+`ROWS BETWEEN n PRECEDING AND CURRENT ROW`
+
+```SQL
+
+SELECT
+  user_id,
+  tweet_date,
+  ROUND(AVG(tweet_count) 
+  OVER(PARTITION BY user_id 
+  ORDER BY tweet_date 
+  ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) 
+  AS rolling_avg
+FROM
+  tweets
+  
+```
+
+[Sending vs. Opening Snaps](https://datalemur.com/questions/time-spent-snaps)
+
+`CTE`
+`WITH alias AS ()`
+`FILTER()`
+
+```SQL
+
+WITH
+  open_send AS (
+  SELECT
+    ag.age_bucket,
+    SUM(a.time_spent) FILTER (
+    WHERE
+      a.activity_type = 'send') AS send_sum,
+    SUM(a.time_spent) FILTER (
+    WHERE
+      a.activity_type = 'open') AS open_sum
+  FROM
+    activities a
+  JOIN
+    age_breakdown ag
+  ON
+    a.user_id = ag.user_id
+  GROUP BY
+    1 )
+SELECT
+  age_bucket,
+  ROUND(100.0*send_sum / (send_sum + open_sum),2) AS send_perc,
+  ROUND(100.0*open_sum / (send_sum + open_sum),2) AS open_perc
+FROM
+  open_send
+
+```
+
 [User's Third Transaction](https://datalemur.com/questions/sql-third-transaction)
+
+`window function`
+`ROW_NUMBER() OVER(PARTITION BY id ORDER BY date)`
 
 ```SQL
 
@@ -52,6 +109,8 @@ ORDER BY
 
 ```
 [Laptop vs. Mobile Viewership](https://datalemur.com/questions/laptop-mobile-viewership) 
+
+`SUM(CASE)`
 
 ```SQL
 
