@@ -118,7 +118,39 @@ FROM
 
 ```
 
-[UBER: User's Third Transaction](https://datalemur.com/questions/sql-third-transaction)
+[Amazon: Highest-Grossing Items](https://datalemur.com/questions/sql-highest-grossing)
+
+```SQL
+
+WITH
+  sum_spend_table AS (
+  SELECT
+    category,
+    product,
+    SUM(spend) AS total_spend,
+    ROW_NUMBER() OVER(PARTITION BY category ORDER BY SUM(spend) DESC) AS rnk
+  FROM
+    product_spend
+  WHERE
+    EXTRACT(YEAR
+    FROM
+      transaction_date) = 2022
+  GROUP BY
+    1,
+    2
+    )
+SELECT
+  category,
+  product,
+  total_spend
+FROM
+  sum_spend_table
+WHERE
+  rnk <= 2
+
+```
+
+[Uber: User's Third Transaction](https://datalemur.com/questions/sql-third-transaction)
 
 `window function`
 `ROW_NUMBER() OVER(PARTITION BY id ORDER BY date)`
@@ -209,5 +241,21 @@ ON
 WHERE
   t.signup_action = 'Confirmed'
   AND (DATE(action_date) - DATE(signup_date)) = 1 
+  
+```
+
+[Cards Issued Difference](https://datalemur.com/questions/cards-issued-difference)
+
+```SQL
+
+SELECT
+  card_name,
+  MAX(issued_amount) - MIN(issued_amount) AS difference
+FROM
+  monthly_cards_issued
+GROUP BY
+  card_name
+ORDER BY
+  difference DESC
   
 ```
